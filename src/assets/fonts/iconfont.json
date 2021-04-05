@@ -1,0 +1,44 @@
+{
+  "id": "2404936",
+  "name": "dormitory-management",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "135538",
+      "name": "clock",
+      "font_class": "clock",
+      "unicode": "e6bb",
+      "unicode_decimal": 59067
+    },
+    {
+      "icon_id": "2255850",
+      "name": "Dormitory management",
+      "font_class": "Dormitorymanagement",
+      "unicode": "e6ea",
+      "unicode_decimal": 59114
+    },
+    {
+      "icon_id": "3542080",
+      "name": "Personal information",
+      "font_class": "Personalinformation",
+      "unicode": "e62d",
+      "unicode_decimal": 58925
+    },
+    {
+      "icon_id": "6802049",
+      "name": "Student",
+      "font_class": "Student",
+      "unicode": "e707",
+      "unicode_decimal": 59143
+    },
+    {
+      "icon_id": "11808119",
+      "name": "record",
+      "font_class": "record",
+      "unicode": "e6c3",
+      "unicode_decimal": 59075
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+/* 全局样式表 */
+html,body,#app {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    min-width: 1366px;
+}
+
+.options-wrapper {
+    margin: 20px 0 0 0;
+}
+
+.table-wrapper {
+    margin: 20px 0;
+    .el-table{
+        tr{
+            th, td {
+                text-align: center;
+                font-size:14px;
+                padding: 0;
+            }
+            th{
+                background-color: #f5f5f5;
+                font-family: PingFangSC-Semibold, PingFang SC;
+                font-weight: 400;
+                color: #474A51;
+                height: 48px;
+            }
+            td{
+                font-family:PingFang-SC-Medium,PingFang-SC;
+                font-weight:500;
+                color:rgba(96,98,102,1);
+                height: 47px;
+            }
+        }
+    }
+} 
+
+.pager-wrapper{
+    text-align: right;
+    margin-top: 40px;
+    .el-pagination{
+        button{
+            background: rgba(0,0,0,0);
+            border: 1px solid #d2d2d2;
+        }
+        ul.el-pager{
+            li.number{
+                background: rgba(0,0,0,0);
+                border: 1px solid #d2d2d2;
+                font-weight: normal;
+                &.active{
+                    background-color: #409EFF;
+                    border: 1px solid #409EFF;
+                }
+            }
+        }
+    }
+}
