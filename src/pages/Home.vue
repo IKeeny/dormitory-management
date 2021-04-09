@@ -5,7 +5,7 @@
                 <div>
                     <span>宿舍管理系统</span>
                 </div>
-                <el-button type="info" size="small">退出登录</el-button>
+                <el-button type="info" size="small" @click="logout">退出登录</el-button>
             </el-header>
             <el-container>
                 <el-aside :width="isCollapse ? '64px' : '200px'">
@@ -37,6 +37,7 @@
     export default {
         data() {
             return {
+                // menulist: [],
                 menulist: [    
                     {name:'学生管理', icon:'iconfont icon-Student',path:'/student'},
                     {name:'宿舍管理', icon:'iconfont icon-Dormitorymanagement',path:'/dormitory'},
@@ -45,12 +46,79 @@
                     {name:'个人信息', icon:'iconfont icon-Personalinformation',path:'/userInfo'}
                 ],
                 //是否折叠
-                isCollapse: false
+                isCollapse: false,
+                userData: ''
             }
+        },
+        // computed:{
+        //     userData:()=>{
+        //         return this.$store.state.userData
+        //     }
+        // },
+        mounted(){
+            console.log('计算属性试一下',this.userData)
+            // console.log('加载了吗')
+            // console.log('拿到存的数据2',this.$store.state.userData)
+            // let { type } = JSON.parse(this.$store.state.userData)
+            
+            // if(type === 'student'){
+            //     this.menulist = [    
+            //         {name:'晚归记录',icon:'iconfont icon-clock',path:'/late'},
+            //         {name:'离返校登记', icon:'iconfont icon-record',path:'/record'},
+            //         {name:'个人信息', icon:'iconfont icon-Personalinformation',path:'/userInfo'}
+            //     ]
+            // }else if(type === 'manager'){
+            //     this.menulist = [    
+            //         {name:'学生管理', icon:'iconfont icon-Student',path:'/student'},
+            //         {name:'宿舍管理', icon:'iconfont icon-Dormitorymanagement',path:'/dormitory'},
+            //         {name:'晚归记录',icon:'iconfont icon-clock',path:'/late'},
+            //         {name:'离返校登记', icon:'iconfont icon-record',path:'/record'},
+            //         {name:'个人信息', icon:'iconfont icon-Personalinformation',path:'/userInfo'}
+            //     ]
+            // }
+            // setTimeout(this.getType(),3000)
+            // this.getType()
+            this.$nextTick(()=>{
+                // this.getType()
+            })
         },
         methods: {
             toggleCollapse(){
                 this.isCollapse = !this.isCollapse
+            },
+            /*
+             **退出登录
+             */
+            logout(){
+                this.$message({
+                    message: '退出登录',
+                    type: 'success'
+                })
+                this.$store.commit('delUserData')
+                this.$router.push('/login')             
+            },
+            /*
+             **获取用户类型
+             */
+            getType(){
+                console.log('加载了吗')
+                console.log('新方法--拿到存的数据2',this.$store.state.userData)
+                let { type } = JSON.parse(this.$store.state.userData)
+                if(type === 'student'){
+                    this.menulist = [    
+                        {name:'晚归记录',icon:'iconfont icon-clock',path:'/late'},
+                        {name:'离返校登记', icon:'iconfont icon-record',path:'/record'},
+                        {name:'个人信息', icon:'iconfont icon-Personalinformation',path:'/userInfo'}
+                    ]
+                }else if(type === 'manager'){
+                    this.menulist = [    
+                        {name:'学生管理', icon:'iconfont icon-Student',path:'/student'},
+                        {name:'宿舍管理', icon:'iconfont icon-Dormitorymanagement',path:'/dormitory'},
+                        {name:'晚归记录',icon:'iconfont icon-clock',path:'/late'},
+                        {name:'离返校登记', icon:'iconfont icon-record',path:'/record'},
+                        {name:'个人信息', icon:'iconfont icon-Personalinformation',path:'/userInfo'}
+                    ]
+                }
             }
         }
     }

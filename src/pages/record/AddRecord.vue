@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-dialog
-            title="编辑学生"
+            title="添加记录"
             :visible.sync="dialogVisible"
             width="850px"
             :before-close="handleClose"
@@ -20,69 +20,27 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="性别" prop="gender">
-                                <el-radio-group v-model="ruleForm.gender">
-                                    <el-radio label="男">男</el-radio>
-                                    <el-radio label="女">女</el-radio>
-                                </el-radio-group>
+                            <el-form-item label="离校时间" prop="leavetime">
+                                <el-date-picker
+                                    v-model="value1"
+                                    type="datetime"
+                                    placeholder="选择日期时间">
+                                </el-date-picker>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="楼栋" prop="apartment">
-                                <el-select v-model="ruleForm.apartment" placeholder="请选择">
-                                    <el-option
-                                        v-for="item in apartmentOptions"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="宿舍号" prop="dormno">
-                                <el-select v-model="ruleForm.dormno" placeholder="请选择">
-                                    <el-option
-                                        v-for="item in dormOptions"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="电话号码" prop="phone">
-                                <el-input v-model="ruleForm.phone" placeholder="请输入"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="年级" prop="grade">
-                                <el-select v-model="ruleForm.grade" placeholder="请选择">
-                                    <el-option
-                                        v-for="item in gradeOptions"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="专业" prop="majorno">
-                                <el-cascader
-                                    v-model="selectedKey" 
-                                    :options="majorOptions" 
-                                    :show-all-levels="false"
-                                    :props="majorProps"
-                                    @change="selectedMajor">
-                                </el-cascader>
+                            <el-form-item label="返校时间" prop="returntime">
+                                <el-date-picker
+                                    v-model="value1"
+                                    type="datetime"
+                                    placeholder="选择日期时间">
+                                </el-date-picker>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-form-item>
                         <div class="btn-wrapper">
-                            <el-button size="medium" type="primary" @click="postEditStudent">保存</el-button>
+                            <el-button size="medium" type="primary" @click="postAddRecord">保存</el-button>
                             <el-button size="medium" @click="handleCloseDialogClick">取消</el-button>
                         </div>
                     </el-form-item>
@@ -93,20 +51,21 @@
 </template>
 
 <script>
-    import { getUserInfo } from '@/api/user'
-    import { getMajorAll,getMajor } from '@/api/college'
+    import { getMajorAll } from '@/api/college'
     import { validatePhone } from '@/utils/validateInput'
     export default {
-        props: {
-            dialogVisible: {
-                type: Boolean,
-                default: false
-            },
-            studentno: '',
-        },
+        // props: {
+        //     dialogVisible: {
+        //         type: Boolean,
+        //         default: false
+        //     }
+        // },
         data() {
             return {
-                ruleForm: {},
+                dialogVisible: true,
+                ruleForm: {
+
+                },
                 rules: {
                     username: [
                         { required: true, message: '请输入学生姓名', trigger: 'blur' },
@@ -134,35 +93,15 @@
                 majorProps: {
                     expandTrigger:'hover',
                     emitPath: false
-                },
-                selectedKey: '',
+                }
             }
         },
         mounted(){
             this.getMajorAll()
         },
-        watch:{
-            studentno: {
-                handler(val, oldVal) {
-                    console.log('旧值--',oldVal,'新值--',val)
-                    this.getStudent(val)
-                },
-                //立即执行
-                immediate: true
-            },   
-        },
         methods: {
-            //获取学生信息
-            getStudent(studentno){
-                getUserInfo({studentno:studentno}).then((res)=>{
-                    if(res.data.code === 200){
-                        this.selectedKey = res.data.data.majorno
-                        this.ruleForm = res.data.data
-                    }
-                })
-            },
-            postEditStudent(){
-                this.$emit('postEditStudent',this.ruleForm)
+            postAddRecord(){
+                this.$emit('postAddStudent',this.ruleForm)
             },
             handleCloseDialogClick(){
                 this.$emit('handleCloseDialogClick')

@@ -19,6 +19,16 @@ export const postLogin = (params) => request({
 })
 
 /**
+ * 根据学号获取用户信息
+ */
+ export const getUserInfo = (params) => request({
+    method: 'get',
+    url: `/user/studentInfo`,
+    params
+})
+
+
+/**
  * 添加学生
  */
  export const postAddStudent = (params) => request({

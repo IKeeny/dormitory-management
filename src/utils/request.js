@@ -6,6 +6,7 @@
      Message,
      Loading
  } from 'element-ui'
+ import router from '../router'
  
  let loading = null
  let timer = null
@@ -64,6 +65,49 @@ const http = axios.create({
      retry: 4,
      retryDelay: 1000
 })
+
+//request请求拦截
+http.interceptors.request.use(
+    config=>{
+        // console.log('请求拦截',config)
+        let token = localStorage.getItem('token')
+        if(token){
+            token = `Bearer ${token}`
+            config.headers.Authorization = token
+        }
+        return config
+    },
+    err=>{
+        return Promise.reject(err)
+    }
+)
+
+//response拦截器
+// http.interceptors.response.use(
+//     res =>{
+//         console.log('http拦截请求',res)
+//         //code为非200是抛错
+//         if(res.status !== 200){
+//             Message({
+//                 message: res.statusText,
+//                 type: 'error',
+//                 duration: messageTime
+//             })
+//             return Promise.reject(res.message)
+//         }else{
+//             //token失效返回login
+//             if(res.data && res.data.code === 401){
+//                 Message({
+//                     message: res.data.message,
+//                     type: 'error',
+//                     duration: messageTime
+//                 })
+//                 // router.push('/login')
+//             }
+//             return res.data
+//         }
+//     }
+// )
 
 // respone拦截器
 //  http.interceptors.response.use(

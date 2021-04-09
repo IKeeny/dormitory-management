@@ -30,15 +30,15 @@
 </template>
 
 <script>
-import { postLogin } from '@/api/user'
+import { postLogin,getUserInfo } from '@/api/user'
 
 export default {
   data() {
     return {
       //登录表单的数据绑定对象
       loginForm:{
-        studentno:'',
-        password:''
+        studentno:'100000',
+        password:'123456'
       },
       //验证是否合法
       loginFormRules:{
@@ -56,13 +56,29 @@ export default {
   methods: {
       login(){
         postLogin(this.loginForm).then((res)=>{
-          console.log(res)
+          console.log('登录',res)
           if(res.data.code == 200 && res.data.message === true){
             this.$message({
               message: '登录成功',
               type: 'success'
             })
+            getUserInfo({studentno:this.loginForm.studentno}).then(res=>{
+              console.log('获取到的用户信息',res)
+              let userData = {
+                studentno: res.data.data.studentno,
+                type: res.data.data.type
+              }
+              console.log('存储的用户数据',userData)
+              // this.$store.commit('delUserData')
+              this.$store.commit('setUserData',userData)
+              console.log('拿到存的数据1',JSON.parse(this.$store.state.userData))
+            })
+            
+            localStorage.removeItem('token')
+            localStorage.setItem('token',res.data.token)
             this.$router.push('/home')
+            //清空登录表单
+            this.loginForm = {}
           }else{
             this.$message.error(res.data.message)
           }

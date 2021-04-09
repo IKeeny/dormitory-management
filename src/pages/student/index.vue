@@ -10,13 +10,13 @@
         <div class="options-wrapper">
             <el-form :inline="true" :model="options" class="demo-form-inline">
                 <el-form-item label="姓名：">
-                    <el-input v-model="options.name" size="small" placeholder="请输入姓名"></el-input>
+                    <el-input v-model="options.name" size="medium" placeholder="请输入姓名"></el-input>
                 </el-form-item>
                 <el-form-item label="学号：">
-                    <el-input v-model="options.studentno" size="small" placeholder="请输入学号"></el-input>
+                    <el-input v-model="options.studentno" size="medium" placeholder="请输入学号"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" size="small" icon="el-icon-search" @click="onSearch">查询</el-button>
+                    <el-button type="primary" size="medium" icon="el-icon-search" @click="onSearch">查询</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -32,7 +32,7 @@
             <el-table
                 ref="multipleTable"
                 :data="tableData"
-                height="300"
+                height="250"
                 tooltip-effect="dark"
                 :show-overflow-tooltip="true"         
                 @selection-change="handleSelectionChange"
@@ -123,7 +123,7 @@
         <!-- 编辑学生 -->
         <EditStudent
             :dialogVisible="editDialogVisible"
-            :ruleForm="editRuleForm"
+            :studentno="editStudentno"
             v-if="editDialogVisible"
             @postEditStudent="postEditStudent"
             @handleCloseDialogClick="editDialogVisible = false"
@@ -135,7 +135,7 @@
 <script>
     import AddStudent from './AddStudent'
     import EditStudent from './EditStudent'
-    import { postAddStudent,postDeleteStudent,getStudentList,postUpdateStudent } from '@/api/user'
+    import { postAddStudent,postDeleteStudent,getStudentList,postUpdateStudent,getUserInfo } from '@/api/user'
     import { getMajor } from '@/api/college'
 
     export default {
@@ -174,7 +174,9 @@
                 addDialogVisible: false,
                 studentInfo: [],
                 editDialogVisible: false,
-                editRuleForm: {}
+                editRuleForm: {},
+                //传给编辑对话框
+                editStudentno: ''
             }
         },
         mounted(){
@@ -236,15 +238,14 @@
             //编辑学生
             editStudent(studentno){
                 this.getStudent(studentno)
+                this.editStudentno = studentno
                 this.editDialogVisible = true
             },
             getStudent(studentno){
-                getStudentList({
-                    studentno:studentno,
-                    page: this.pager.page,
-                    size: this.pager.size
+                getUserInfo({
+                    studentno:studentno
                 }).then((res)=>{
-                    console.log('根据学号获取的学生信息啊啊啊',res.data.data.list[0])
+                    console.log('根据学号获取的学生信息啊啊啊',res.data.data)
                 })
             },
             postEditStudent(ruleForm){
