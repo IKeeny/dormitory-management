@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-dialog
-            title="添加记录"
+            title="编辑学生"
             :visible.sync="dialogVisible"
             width="850px"
             :before-close="handleClose"
@@ -11,12 +11,12 @@
                     <el-row :gutter="20">
                         <el-col :span="12">
                             <el-form-item label="姓名" prop="username">
-                                <el-input v-model="username" placeholder="请输入"></el-input>
+                                <el-input v-model="username" placeholder="请输入" disabled></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="学号" prop="studentno">
-                                <el-input v-model="ruleForm.studentno" placeholder="请输入"></el-input>
+                                <el-input v-model="ruleForm.studentno" placeholder="请输入" disabled></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -40,7 +40,7 @@
                     </el-row>
                     <el-form-item>
                         <div class="btn-wrapper">
-                            <el-button size="medium" type="primary" @click="postAddRecord">保存</el-button>
+                            <el-button size="medium" type="primary" @click="postEditRecord">保存</el-button>
                             <el-button size="medium" @click="handleCloseDialogClick">取消</el-button>
                         </div>
                     </el-form-item>
@@ -51,20 +51,19 @@
 </template>
 
 <script>
-    import { getMajorAll } from '@/api/college'
-    import { validatePhone } from '@/utils/validateInput'
+    import { getRecordInfo } from '@/api/record'
     export default {
         props: {
             dialogVisible: {
                 type: Boolean,
                 default: false
-            }
+            },
+            recordId: '',
+            username: '',
         },
         data() {
             return {
-                ruleForm: {
-
-                },
+                ruleForm: {},
                 username: '',
                 rules: {
                     // username: [
@@ -85,16 +84,42 @@
         mounted(){
             
         },
+        watch:{
+            recordId: {
+                handler(val, oldVal) {
+                    console.log('旧值--',oldVal,'新值--',val)
+                    this.getRecordInfo(val)
+                },
+                //立即执行
+                immediate: true
+            }, 
+            username: {
+                handler(val, oldVal) {
+                    this.username = val
+                },
+                //立即执行
+                immediate: true
+            },  
+        },
         methods: {
-            postAddRecord(){
-                this.$emit('postAddRecord',this.ruleForm)
+            //获取记录信息
+            getRecordInfo(recordId){
+                getRecordInfo({_id:recordId}).then((res)=>{
+                    if(res.data.code === 200){
+                        this.ruleForm = res.data.data
+                        // console.log('没有学号吗',this.ruleForm)
+                    }
+                })
+            },
+            postEditRecord(){
+                this.$emit('postEditRecord',this.ruleForm)
             },
             handleCloseDialogClick(){
                 this.$emit('handleCloseDialogClick')
             },
             handleClose(){
                 this.$emit('handleClose')
-            },         
+            }         
         }
     }
 </script>

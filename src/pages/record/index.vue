@@ -71,19 +71,19 @@
                     width="120">
                 </el-table-column>
                 <el-table-column
-                    prop="leavetime"
+                    prop="leaveTime"
                     label="离校时间"
                     width="150">
                 </el-table-column>
                 <el-table-column
-                    prop="returntime"
+                    prop="returnTime"
                     label="返校时间"
                     width="150">
                 </el-table-column>
                 <el-table-column prop="name" label="操作">
                     <template v-slot="scope">
-                        <el-button type="text" size="small" @click="editRecord(scope.row.studentno)">编辑</el-button>
-                        <el-button type="text" size="small" @click="deleteRecord(scope.row.studentno)">删除</el-button>
+                        <el-button type="text" size="small" @click="editRecord(scope.row)">编辑</el-button>
+                        <el-button type="text" size="small" @click="deleteRecord(scope.row._id)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -103,22 +103,55 @@
             >
             </el-pagination>
         </div>
+
+        <!-- 添加记录 -->
+        <AddRecord
+            :dialogVisible="addDialogVisible"
+            v-if="addDialogVisible"
+            @postAddRecord="postAddRecord"
+            @handleCloseDialogClick="addDialogVisible = false"
+            @handleClose="addDialogVisible = false"
+        /> 
+
+        <!-- 编辑记录 -->
+        <EditRecord
+            :dialogVisible="editDialogVisible"
+            :recordId="recordId"
+            :username="username"
+            v-if="editDialogVisible"
+            @postEditRecord="postEditRecord"
+            @handleCloseDialogClick="editDialogVisible = false"
+            @handleClose="editDialogVisible = false"
+        /> 
     </div>
 </template>
 
 <script>
-    import { getRecordList } from '@/api/record'
+    import AddRecord from './AddRecord'
+    import EditRecord from './EditRecord'
+    import { getUserInfo } from '@/api/user'
+    import { getRecordList,postAddRecord,postEditRecord,postDeleteRecord } from '@/api/record'
     export default {
+        components: {
+            AddRecord,
+            EditRecord
+        },
         data() {
             return {
                 options: {},
-                loading: false,
+                loading: true,
                 tableData: [],
                 pager: {
                     total: 8,
                     size: 10,
                     page: 1
-                }
+                },
+                //添加记录
+                addDialogVisible: false,
+                //编辑记录
+                editDialogVisible: false,
+                recordId: '',
+                username: ''
             }
         },
         mounted(){
@@ -129,13 +162,52 @@
              **获取记录列表
              */
             getRecordList(){
-
+                getRecordList({
+                    page: this.pager.page,
+                    size: this.pager.size
+                }).then(res=>{
+                    if(res.data.code === 200){
+                        console.log('所有离返校记录测试',res.data.data.list)
+                        this.tableData = res.data.data.list
+                        this.pager.total = res.data.data.total
+                        this.getStudentInfo()
+                    }
+                })
+            },
+            /*
+             **获取学生信息
+             */
+            getStudentInfo(){
+                this.tableData.map((item,index)=>{
+                    getUserInfo({studentno:item.studentno}).then(res=>{
+                        if(res.data.code === 200){
+                            item = Object.assign(res.data.data,item)
+                            // console.log('item.id',item._id)
+                            this.$set(this.tableData,index,item)
+                            this.loading = false
+                        }                    
+                    })                  
+                })
             },
             /*
              **添加记录
              */
             addRecord(){
-
+                this.addDialogVisible = true
+            },
+            postAddRecord(ruleForm){
+                postAddRecord(ruleForm).then(res=>{
+                    if(res.data.code === 200){
+                        this.$message({
+                            message: '添加成功',
+                            type: 'success'
+                        })
+                        this.getRecordList()
+                    }else{
+                        this.$message.error(res.data.message)
+                    }
+                    this.addDialogVisible = false
+                })
             },
             /*
              **选择数据时
@@ -146,19 +218,82 @@
             /*
              **编辑记录
              */
-            editRecord(){},
+            editRecord(record){
+                this.editDialogVisible = true
+                this.recordId = record._id
+                this.username = record.username
+            },
+            postEditRecord(ruleForm){
+                postEditRecord(ruleForm).then(res=>{
+                    if(res.data.code === 200){
+                        this.$message({
+                            message: '编辑成功',
+                            type: 'success'
+                        })
+                        this.getRecordList()
+                    }else{
+                        this.$message.error(res.data.message)
+                    }
+                    this.editDialogVisible = false
+                })
+            },
             /*
              **删除记录
              */
-            deleteRecord(){},
+            deleteRecord(id){
+                this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(()=>{
+                    postDeleteRecord({_id:id}).then((res)=>{
+                        if(res.data.code === 200){
+                            this.$message({
+                                message: '删除成功',
+                                type: 'success'
+                            })
+                            this.getRecordList()
+                        }
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });          
+                })     
+            },
+            /*
+             **按条件搜索
+             */
+            onSearch(){
+                getRecordList({
+                    username: this.options.name,
+                    studentno: this.options.studentno,
+                    page: this.pager.page,
+                    size: this.pager.size
+                }).then((res)=>{
+                    if(res.data.code === 200){
+                        console.log('查询到的结果列表',res.data)
+                        this.tableData = res.data.data.list
+                        this.pager.total = res.data.data.total              
+                        this.getStudentInfo()
+                    }
+                })
+            },
             /*
              **每页的条数发生改变时
              */
-            handleSizeChange(){},
+            handleSizeChange(val){
+                this.pager.size = val
+                this.onSearch()
+            },
             /*
              **页码改变
              */
-            handleCurrentChange(){}
+            handleCurrentChange(val){
+                this.pager.page = val
+                this.onSearch()
+            }
         }
     }
 </script>

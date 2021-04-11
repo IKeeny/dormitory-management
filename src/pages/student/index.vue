@@ -199,20 +199,14 @@
             },
             //获取专业信息
             getMajor(){
-                this.tableData = this.tableData.map(item=>{
+                this.tableData.map((item,index)=>{
                     getMajor({majorno:item.majorno}).then((res)=>{
-                        // console.log('打印每一项',item)
-                        // console.log(res)
                         if(res.data.code === 200){
-                            item.major = res.data.data.major
-                            item.department = res.data.data.department
-                            // console.log('打印每一项专业',item.major)
-                            this.$set(this.tableData,item.major,res.data.data.major)
-                            // this.$set(this.tableData,item.department,res.data.data.department)
+                            item = Object.assign(item,res.data.data)
+                            this.$set(this.tableData,index,item)
                             this.loading = false
                         }                       
                     })
-                    return item
                 })
                 console.log('表格数据',this.tableData)
             },

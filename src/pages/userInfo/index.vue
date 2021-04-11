@@ -18,6 +18,11 @@
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
+                    <el-form-item label="密码" prop="studentno">
+                        <el-input v-model="ruleForm.password" placeholder="请输入"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
                     <el-form-item label="性别" prop="gender">
                         <el-radio-group v-model="ruleForm.gender">
                             <el-radio label="男">男</el-radio>
@@ -168,7 +173,7 @@
 <style lang="scss" scoped>
 .demo-ruleForm {
     margin-top: 30px;
-    margin-left: -40px;
+    // margin-left: -40px;
     width: 850px;
 }
 </style>
