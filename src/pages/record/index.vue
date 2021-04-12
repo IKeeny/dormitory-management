@@ -141,6 +141,7 @@
                 options: {},
                 loading: true,
                 tableData: [],
+                loading: true,
                 pager: {
                     total: 8,
                     size: 10,
