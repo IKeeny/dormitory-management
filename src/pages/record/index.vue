@@ -131,6 +131,7 @@
     import EditRecord from './EditRecord'
     import { getUserInfo } from '@/api/user'
     import { getRecordList,postAddRecord,postEditRecord,postDeleteRecord } from '@/api/record'
+    import { getDormInfo } from '@/api/dorm'
     export default {
         components: {
             AddRecord,
@@ -185,10 +186,30 @@
                             item = Object.assign(res.data.data,item)
                             // console.log('item.id',item._id)
                             this.$set(this.tableData,index,item)
-                            this.loading = false
+                            this.getDorm()
                         }                    
                     })                  
                 })
+            },
+            //获取宿舍信息
+            getDorm(){
+                this.tableData.map((item,index)=>{
+                    // console.log('表格数据每一项',item)
+                    getDormInfo({_id:item.dormId}).then(res=>{
+                        // console.log('有查到dorm吗',res)
+                        if(res.data.code === 200){
+                            let dorm = {
+                                apartment:res.data.data.apartment,
+                                dormno: res.data.data.dormno
+                            }
+                            // console.log('dorm有没有',dorm)
+                            item = Object.assign(item,dorm)
+                            this.$set(this.tableData,index,item)
+                            this.loading = false
+                        }
+                    })
+                })
+                // console.log('表格数据',this.tableData)
             },
             /*
              **添加记录
