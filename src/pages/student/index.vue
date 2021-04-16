@@ -137,6 +137,7 @@
     import EditStudent from './EditStudent'
     import { postAddStudent,postDeleteStudent,getStudentList,postUpdateStudent,getUserInfo } from '@/api/user'
     import { getMajor } from '@/api/college'
+    import { getDormInfo,getDormList } from '@/api/dorm'
 
     export default {
         name: 'Student',
@@ -194,6 +195,7 @@
                         this.tableData = res.data.data.list
                         this.pager.total = res.data.data.total
                         this.getMajor()
+                        this.getDorm()
                     }
                 })
             },
@@ -204,8 +206,26 @@
                         if(res.data.code === 200){
                             item = Object.assign(item,res.data.data)
                             this.$set(this.tableData,index,item)
-                            this.loading = false
                         }                       
+                    })
+                })
+            },
+            //获取宿舍信息
+            getDorm(){
+                this.tableData.map((item,index)=>{
+                    // console.log('表格数据每一项',item)
+                    getDormInfo({_id:item.dormId}).then(res=>{
+                        // console.log('有查到dorm吗',res)
+                        if(res.data.code === 200){
+                            let dorm = {
+                                apartment:res.data.data.apartment,
+                                dormno: res.data.data.dormno
+                            }
+                            // console.log('dorm有没有',dorm)
+                            item = Object.assign(item,dorm)
+                            this.$set(this.tableData,index,item)
+                            this.loading = false
+                        }
                     })
                 })
                 console.log('表格数据',this.tableData)

@@ -28,27 +28,13 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="楼栋" prop="apartment">
-                                <el-select v-model="ruleForm.apartment" placeholder="请选择">
-                                    <el-option
-                                        v-for="item in apartmentOptions"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="宿舍号" prop="dormno">
-                                <el-select v-model="ruleForm.dormno" placeholder="请选择">
-                                    <el-option
-                                        v-for="item in dormOptions"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
+                            <el-form-item label="楼栋宿舍" prop="apartment">
+                                <el-cascader 
+                                    v-model="selectedDormId" 
+                                    :options="dormOptions" 
+                                    :props="dormProps"
+                                    @change="selectedDorm">
+                                </el-cascader>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -94,6 +80,7 @@
 
 <script>
     import { getUserInfo } from '@/api/user'
+    import { getDormList } from '@/api/dorm'
     import { getMajorAll,getMajor } from '@/api/college'
     import { validatePhone } from '@/utils/validateInput'
     export default {
@@ -121,8 +108,13 @@
                     //     { required: true, message: '请选择专业', trigger: 'blur' }
                     // ]
                 },
-                apartmentOptions: [],
+                //楼栋宿舍选择
                 dormOptions: [],
+                dormProps: {
+                    expandTrigger:'hover',
+                    emitPath: false
+                },
+                selectedDormId: '',
                 gradeOptions: [
                     { label:2017, value:2017 },
                     { label:2018, value:2018 },
@@ -140,6 +132,7 @@
         },
         mounted(){
             this.getMajorAll()
+            this.getDorm()
         },
         watch:{
             studentno: {
@@ -157,6 +150,7 @@
                 getUserInfo({studentno:studentno}).then((res)=>{
                     if(res.data.code === 200){
                         this.selectedKey = res.data.data.majorno
+                        this.selectedDormId = res.data.data.dormId
                         this.ruleForm = res.data.data
                     }
                 })
@@ -201,7 +195,40 @@
             selectedMajor(res){
                 this.ruleForm.majorno = res
                 console.log(this.ruleForm)
-            },          
+            },         
+            //获取宿舍信息并转换成相应格式    
+            getDorm(){
+                getDormList().then(res=>{
+                    if(res.data.code === 200){
+                        let dormList = res.data.data.list
+                        
+                        let newArr = []
+                        dormList.forEach(dorm=>{
+                            let index = -1
+                            let isExists = newArr.some((item,i)=>{
+                                if(item.label === dorm.apartment){
+                                    index = i
+                                    return true
+                                }
+                            })
+                            if(!isExists){
+                                newArr.push({
+                                    value:dorm.apartment,
+                                    label:dorm.apartment,
+                                    children:[{value:dorm._id, label:dorm.dormno}]
+                                })
+                            }else{
+                                newArr[index].children.push({value:dorm._id, label:dorm.dormno})
+                            }
+                        })
+                        this.dormOptions = newArr
+                    }
+                })
+            },
+            selectedDorm(val){
+                this.ruleForm.dormId = val
+                console.log('选中的宿舍',val)
+            },
         }
     }
 </script>
